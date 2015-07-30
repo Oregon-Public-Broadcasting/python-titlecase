@@ -7,6 +7,7 @@ from __future__ import print_function
 
 import os
 import sys
+import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
 
 from titlecase import titlecase
@@ -190,38 +191,6 @@ TEST_DATA = (
     )
 )
 
-
-def test_all_caps_regex():
-    """Test - all capitals regex"""
-    from titlecase import ALL_CAPS
-    assert bool(ALL_CAPS.match('THIS IS ALL CAPS')) is True
-
-
-def test_initials_regex():
-    """Test - uppercase initals regex with A.B"""
-    from titlecase import UC_INITIALS
-    assert bool(UC_INITIALS.match('A.B')) is True
-
-
-def test_initials_regex_2():
-    """Test - uppercase initals regex with A.B."""
-    from titlecase import UC_INITIALS
-    assert bool(UC_INITIALS.match('A.B.')) is True
-
-
-def test_initials_regex_3():
-    """Test - uppercase initals regex with ABCD"""
-    from titlecase import UC_INITIALS
-    assert bool(UC_INITIALS.match('ABCD')) is False
-
-def test_ordinals_regex_4():
-    """
-    Test - numbers ending in ordinals like 1st and 24th
-    """
-    from titlecase import ORDINALS
-    assert bool(ORDINALS.match('34Th')) is False
-    assert bool(ORDINALS.match('1st')) is True
-
 def check_input_matches_expected_output(in_, out):
     """Function yielded by test generator"""
     try:
@@ -230,23 +199,54 @@ def check_input_matches_expected_output(in_, out):
         print("{0} != {1}".format(titlecase(in_), out))
         raise
 
-
-def test_input_output():
-    """Generated tests"""
-    for data in TEST_DATA:
-        yield check_input_matches_expected_output, data[0], data[1]
-
-
-def test_callback():
-    def abbreviation(word, **kwargs):
-        if word.upper() in ('TCP', 'UDP'):
-            return word.upper()
-    s = 'a simple tcp and udp wrapper'
-    assert titlecase(s) == 'A Simple Tcp and Udp Wrapper'
-    assert titlecase(s, callback=abbreviation) == 'A Simple TCP and UDP Wrapper'
-    assert titlecase(s.upper(), callback=abbreviation) == 'A Simple TCP and UDP Wrapper'
+class TitleCaseTest(unittest.TestCase):
+    def test_all_caps_regex(self):
+        """Test - all capitals regex"""
+        from titlecase import ALL_CAPS
+        assert bool(ALL_CAPS.match('THIS IS ALL CAPS')) is True
 
 
-if __name__ == "__main__":
-    import nose
-    nose.main()
+    def test_initials_regex(self):
+        """Test - uppercase initals regex with A.B"""
+        from titlecase import UC_INITIALS
+        assert bool(UC_INITIALS.match('A.B')) is True
+
+
+    def test_initials_regex_2(self):
+        """Test - uppercase initals regex with A.B."""
+        from titlecase import UC_INITIALS
+        assert bool(UC_INITIALS.match('A.B.')) is True
+
+
+    def test_initials_regex_3(self):
+        """Test - uppercase initals regex with ABCD"""
+        from titlecase import UC_INITIALS
+        assert bool(UC_INITIALS.match('ABCD')) is False
+
+    def test_ordinals_list_item(self):
+        """
+        Test - numbers ending in ordinals like 1st and 24th
+        """
+        from titlecase import ORDINALS
+        assert '34Th' not in titlecase(TEST_DATA[2][0])
+        assert '1st' in titlecase(TEST_DATA[2][0])
+
+    def test_input_output(self):
+        """Generated tests"""
+        for data in TEST_DATA:
+            yield check_input_matches_expected_output, data[0], data[1]
+
+
+    def test_callback(self):
+        def abbreviation(word, **kwargs):
+            if word.upper() in ('TCP', 'UDP'):
+                return word.upper()
+        s = 'a simple tcp and udp wrapper'
+        assert titlecase(s) == 'A Simple Tcp and Udp Wrapper'
+        assert titlecase(s, callback=abbreviation) == 'A Simple TCP and UDP Wrapper'
+        assert titlecase(s.upper(), callback=abbreviation) == 'A Simple TCP and UDP Wrapper'
+
+
+    if __name__ == "__main__":
+        import nose
+        nose.main()
