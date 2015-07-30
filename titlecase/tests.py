@@ -21,8 +21,8 @@ TEST_DATA = (
         "Dance With Me/Let’s Face the Music and Dance"
     ),
     (
-        "34th 3rd 2nd",
-        "34th 3rd 2nd"
+        "34th 3rd 2nd 1st",
+        "34th 3rd 2nd 1st"
     ),
     (
         "Q&A with steve jobs: 'that's what happens in technology'",
@@ -214,6 +214,13 @@ def test_initials_regex_3():
     from titlecase import UC_INITIALS
     assert bool(UC_INITIALS.match('ABCD')) is False
 
+def test_ordinals_regex_4():
+    """
+    Test - numbers ending in ordinals like 1st and 24th
+    """
+    from titlecase import ORDINALS
+    assert bool(ORDINALS.match('34Th')) is False
+    assert bool(ORDINALS.match('1st')) is True
 
 def check_input_matches_expected_output(in_, out):
     """Function yielded by test generator"""

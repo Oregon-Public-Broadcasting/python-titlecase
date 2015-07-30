@@ -10,10 +10,11 @@ License: http://www.opensource.org/licenses/mit-license.php
 import re
 
 __all__ = ['titlecase']
-__version__ = '0.7.2'
+__version__ = '0.7.3'
 
 SMALL = 'a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v\.?|via|vs\.?'
 PUNCT = r"""!"#$%&'‘()*+,\-./:;?@[\\\]_`{|}~"""
+ORDINALS = ('st','th','rd','nd','s')
 
 SMALL_WORDS = re.compile(r'^(%s)$' % SMALL, re.I)
 INLINE_PERIOD = re.compile(r'[a-z][.][a-z]', re.I)
@@ -26,7 +27,6 @@ APOS_SECOND = re.compile(r"^[dol]{1}['‘]{1}[a-z]+$", re.I)
 ALL_CAPS = re.compile(r'^[A-Z\s\d%s]+$' % PUNCT)
 UC_INITIALS = re.compile(r"^(?:[A-Z]{1}\.{1}|[A-Z]{1}\.{1}[A-Z]{1})+$")
 MAC_MC = re.compile(r"^([Mm]c)(\w.+)")
-
 
 def titlecase(text, callback=None):
     """
@@ -51,6 +51,12 @@ def titlecase(text, callback=None):
                 new_word = callback(word, all_caps=all_caps)
                 if new_word:
                     tc_line.append(new_word)
+                    continue
+
+            if len(word) > 0 and word[0].isdigit():
+                if word.lower().endswith(ORDINALS):
+                    print word
+                    tc_line.append(word.lower())
                     continue
 
             if all_caps:
