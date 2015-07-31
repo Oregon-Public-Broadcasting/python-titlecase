@@ -55,7 +55,6 @@ def titlecase(text, callback=None):
 
             if len(word) > 0 and word[0].isdigit():
                 if word.lower().endswith(ORDINALS):
-                    print word
                     tc_line.append(word.lower())
                     continue
 
